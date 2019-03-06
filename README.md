@@ -1,0 +1,2 @@
+# NeuralNet
+genetic algo
