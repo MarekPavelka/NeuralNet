@@ -27,12 +27,12 @@ namespace NeuralNET
 
         public void InitializeRandomWeights(int inputCount)
         {
-            _weights = new double[inputCount].Select(weight => _generator.NextDouble()).ToArray();
+            _weights = Enumerable.Range(0,inputCount).Select(_ => _generator.NextDouble()).ToArray();
         }
 
-        public double EvaluateSingleInput(double input) //picoviny vymyslam
+        public double EvaluateSingleInput(double input)
         {
-            return Evaluate(new double[1] { input });
+            return Evaluate(new [] { input });
         }
 
         //public double Evaluate(double[] inputs) // zere vstupne hodnoty napr hidden layer
@@ -48,8 +48,8 @@ namespace NeuralNET
 
         public double Evaluate(double[] inputs)
         {
-            var result = inputs.Zip(_weights, (i, w) => i * w).Sum() + _bias;
-            return result;
+            var inputSum = inputs.Zip(_weights, (i, w) => i * w).Sum() + _bias;
+            return ActivationFunc(inputSum);
         }
 
 

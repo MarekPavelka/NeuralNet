@@ -1,13 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace NeuralNET
 {
     class NeuralNetwork
     {
-        private Neuron[] _inputNeurons; //fieldy, helper premmenne pre funkcie classy a constructor
-        private Neuron[] _hiddenNeurons;
-        private Neuron[] _outputNeurons;
+        private readonly Neuron[] _inputNeurons; //fieldy, helper premmenne pre funkcie classy a constructor
+        private readonly Neuron[] _hiddenNeurons;
+        private readonly Neuron[] _outputNeurons;
 
         //public NeuralNetwork(int inputLayerCount, int hiddenLayerCount, int outputLayerCount) // kolko neuronov v layeri
         //{
@@ -30,10 +29,13 @@ namespace NeuralNET
         public NeuralNetwork(int inputLayerCount, int hiddenLayerCount, int outputLayerCount) // kolko neuronov v layeri
         {
             //_inputNeurons = new Neuron[inputLayerCount].Select(neuron => new Neuron(1)).ToArray();
-            _inputNeurons = Enumerable.Range(0, inputLayerCount).Select(_ => new Neuron(1)).ToArray();
-            _hiddenNeurons = new Neuron[hiddenLayerCount].Select(neuron => new Neuron(inputLayerCount)).ToArray();
-            _outputNeurons = new Neuron[outputLayerCount].Select(neuron => new Neuron(hiddenLayerCount)).ToArray();
+            _inputNeurons = CreateNeuronLayer(inputLayerCount, 1);
+            _hiddenNeurons = CreateNeuronLayer(hiddenLayerCount, inputLayerCount);
+            _outputNeurons = CreateNeuronLayer(outputLayerCount, hiddenLayerCount);
         }
+
+        private Neuron[] CreateNeuronLayer(int neuronCount, int neuronInputCount) =>
+            Enumerable.Range(0, neuronCount).Select(_ => new Neuron(neuronInputCount)).ToArray();
 
         //public double[] EvaluteNetwork(double[] inputs) // to co tam seednem zvonka ked volam EvaluateNetwork
         //{
@@ -41,7 +43,7 @@ namespace NeuralNET
         //    for (int i = 0; i < _inputNeurons.Length; i++)
         //    {
         //        var input = inputs[i]; //3
-        //        inputNeuronsResults[i] = _inputNeurons[i].Evaluate(new double[1] { input });
+        //        inputNeuronsResults[i] = _inputNeurons[i].EvaluateSingleInput(input);
         //    }
 
         //    var hiddenNeuronsResults = new double[_hiddenNeurons.Length]; // (3,4,2)
@@ -60,9 +62,8 @@ namespace NeuralNET
         //}
         public double[] EvaluteNetwork(double[] inputs) // to co tam seednem zvonka ked volam EvaluateNetwork
         {
-            //var inputNeuronsResults = new double[_inputNeurons.Length]
-            //    .Select(neuronResult =>_inputNeurons.Select(neuronValue => neuronValue.Evaluate(inputs[0])))
-            //    .ToArray();
+            //var inputNeuronsResults = _inputNeurons.Select((neuron,index) => neuron.EvaluateSingleInput(inputs[index]))
+            //                          .ToArray();
             //var inputNeuronsResults = new double[_inputNeurons.Length]; // NeuralNetwork(3,4,2)
             //    for (int i = 0; i < _inputNeurons.Length; i++)
             //    {
@@ -80,7 +81,7 @@ namespace NeuralNET
             //        .Select(neuronResult =>
             //            _outputNeurons.Select(neuronValue => neuronValue.Evaluate(hiddenNeuronsResults))).ToArray();
             //    return outputNeuronsResults;
-            var inputNeuronsResults = inputs.Zip(_inputNeurons, (i, n) => n.Evaluate(new[] {i})).ToArray();
+            var inputNeuronsResults = inputs.Zip(_inputNeurons, (i, n) => n.EvaluateSingleInput(i)).ToArray();
             var hiddenNeuronsResults = _hiddenNeurons.Select(neuron => neuron.Evaluate(inputNeuronsResults)).ToArray();
             var outputNeuronresults = _outputNeurons.Select(neuron => neuron.Evaluate(hiddenNeuronsResults)).ToArray();
             return outputNeuronresults;
