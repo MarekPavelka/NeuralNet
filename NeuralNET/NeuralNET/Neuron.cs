@@ -11,10 +11,15 @@ namespace NeuralNET
 
         public Neuron(int inputCount)
         {
-            InitializeRandomWeights(inputCount);
+            _weights = InitializeRandomWeights(inputCount);
             _bias = _generator.NextDouble(); //jedna hodnota
         }
 
+        public Neuron(double[] dna)
+        {
+            _weights = dna.Take(dna.Length - 1).ToArray();
+            _bias = dna.Last();
+        }
 
         //public void InitializeRandomWeights(int inputCount)
         //{
@@ -25,14 +30,15 @@ namespace NeuralNET
         //    }
         //}
 
-        public void InitializeRandomWeights(int inputCount)
+        public double[] InitializeRandomWeights(int inputCount)
         {
-            _weights = Enumerable.Range(0,inputCount).Select(_ => _generator.NextDouble()).ToArray();
+            var weights = Enumerable.Range(0, inputCount).Select(_ => _generator.NextDouble()).ToArray();
+            return weights;
         }
 
         public double EvaluateSingleInput(double input)
         {
-            return Evaluate(new [] { input });
+            return Evaluate(new[] { input });
         }
 
         //public double Evaluate(double[] inputs) // zere vstupne hodnoty napr hidden layer
@@ -56,6 +62,11 @@ namespace NeuralNET
         private double ActivationFunc(double input) // helper pre result funkcie Evaluate
         {
             return 1 / (1 + Math.Exp(-input));
+        }
+
+        public double[] GetDna()
+        {
+            return _weights.Concat(new[] { _bias }).ToArray();
         }
     }
 }
