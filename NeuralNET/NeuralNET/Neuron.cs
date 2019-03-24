@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace NeuralNET
 {
-    class Neuron
+    public class Neuron
     {
         private double[] _weights; // vaha je taka ako input count
         private double _bias; //tuhost neuronu, iba na konci sa narata

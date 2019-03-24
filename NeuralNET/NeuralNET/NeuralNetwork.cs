@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace NeuralNET
 {
-    class NeuralNetwork
+    public class NeuralNetwork
     {
         private readonly Neuron[] _inputNeurons; //fieldy, helper premmenne pre funkcie classy a constructor
         private readonly Neuron[] _hiddenNeurons;
@@ -50,7 +50,7 @@ namespace NeuralNET
             var layer2Count = networkShape[1];
             var Layer2Dna = dna.Skip(Layer1Dna.Length).Take(layer1Count * layer2Count + layer2Count * biasCount).ToArray();
             var layer3Count = networkShape[2];
-            var layer3Dna = dna.Skip(Layer2Dna.Length).Take(layer2Count * layer3Count + layer3Count * biasCount).ToArray();
+            var layer3Dna = dna.Skip(Layer1Dna.Length + Layer2Dna.Length).Take(layer2Count * layer3Count + layer3Count * biasCount).ToArray();
 
             _inputNeurons = Enumerable.Range(0, layer1Count)
                 .Select(nIndex => GetNeuronDna(Layer1Dna, 1 + biasCount, nIndex))
@@ -68,7 +68,7 @@ namespace NeuralNET
                 .ToArray();
         }
 
-        public double[] GetNeuronDna(double[] dnaOfLayer, int dnaElementsNeeded, int dnaIndex)
+        private double[] GetNeuronDna(double[] dnaOfLayer, int dnaElementsNeeded, int dnaIndex)
         {
             return dnaOfLayer.Skip(dnaIndex*dnaElementsNeeded).Take(dnaElementsNeeded).ToArray();
         }
@@ -87,7 +87,7 @@ namespace NeuralNET
             return netDna;
         }
 
-        public int[] GetNetworkInfo()
+        public int[] GetNetworkShape()
         {
             var networkInfo = new[] { _inputNeurons.Length, _hiddenNeurons.Length, _outputNeurons.Length };
             return networkInfo;

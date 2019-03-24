@@ -37,7 +37,7 @@ namespace NeuralNET
             return generationToEvaluate;
         }
 
-        public NeuralNetwork[] GetSurvivors(NeuralNetwork[] generation, Func<NeuralNetwork, double> fitness)
+        private NeuralNetwork[] GetSurvivors(NeuralNetwork[] generation, Func<NeuralNetwork, double> fitness)
         {
             var survivors = generation.OrderByDescending(fitness)
                 .Take(_survivorsCount)
@@ -45,7 +45,7 @@ namespace NeuralNET
             return survivors;
         }
 
-        public NeuralNetwork[] SpawnNextGeneration(NeuralNetwork[] survivors)
+        private NeuralNetwork[] SpawnNextGeneration(NeuralNetwork[] survivors)
         {
             var childrenToGenerateCount = _populationCount - survivors.Length;
             var newChildren = Enumerable.Range(0, childrenToGenerateCount)
@@ -55,7 +55,7 @@ namespace NeuralNET
             return newChildren.Concat(survivors).ToArray();
         }
 
-        public NeuralNetwork[] GetParents(NeuralNetwork[] survivors)
+        private NeuralNetwork[] GetParents(NeuralNetwork[] survivors)
         {
             var parents = new NeuralNetwork[2];
             parents[0] = survivors[_rndGen.Next(0, _survivorsCount)];
@@ -64,16 +64,16 @@ namespace NeuralNET
         }
 
         // sets weights and biases for new child from 2 random survivors
-        public NeuralNetwork SpawnNewChild(NeuralNetwork[] parents) 
+        private NeuralNetwork SpawnNewChild(NeuralNetwork[] parents) 
         {
             var parent1 = parents[0];
             var parent2 = parents[1];
 
-            var childShape = parent1.GetNetworkInfo(); // []{3,4,2}
+            var childShape = parent1.GetNetworkShape(); // []{3,4,2}
 
-            double[] parent1Dna = parent1.GetNetworkDna(parent1); // WEIGHTS+BIASES=[32], intput=3x(1w+1b), hidden=4x(3w+1b), output=2x(4w+1b)
+            double[] parent1Dna = parent1.GetNetworkDna(); // WEIGHTS+BIASES=[32], intput=3x(1w+1b), hidden=4x(3w+1b), output=2x(4w+1b)
 
-            double[] parent2Dna = parent2.GetNetworkDna(parent2);
+            double[] parent2Dna = parent2.GetNetworkDna();
 
             double[] childDna = Crossover(parent1Dna, parent2Dna);
 
@@ -82,7 +82,7 @@ namespace NeuralNET
             return new NeuralNetwork(childShape, childDna);
         }
 
-        public double[] Crossover(double[] parent1Dna, double[] parent2Dna)
+        private double[] Crossover(double[] parent1Dna, double[] parent2Dna)
         {
             var crossoverIdx = _rndGen.Next(1, parent1Dna.Length - 1);
             var childDna = parent1Dna.Take(crossoverIdx).Concat(parent2Dna.Skip(crossoverIdx)).ToArray();
