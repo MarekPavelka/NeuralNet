@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 
 namespace NeuralNET
@@ -28,9 +29,6 @@ namespace NeuralNET
         //    }
         //}
 
-
-
-
         public NeuralNetwork(int inputLayerCount, int hiddenLayerCount, int outputLayerCount) // kolko neuronov v layeri
         {
             //_inputNeurons = new Neuron[inputLayerCount].Select(neuron => new Neuron(1)).ToArray();
@@ -43,6 +41,7 @@ namespace NeuralNET
         // dorobit funkcionalitu na hocikolko layerov
         public NeuralNetwork(int[] networkShape, double[] dna)
         {
+            CheckDnaIsCorrectShape(networkShape, dna);
             var biasCount = 1;
             var numberOfLayers = networkShape.Length; 
             var layer1Count = networkShape[0];
@@ -66,6 +65,19 @@ namespace NeuralNET
                 .Select(nIndex => GetNeuronDna(layer3Dna, layer2Count + biasCount, nIndex))
                 .Select(nDna => new Neuron(nDna))
                 .ToArray();
+        }
+
+        private void CheckDnaIsCorrectShape(int[] networkShape, double[] dna)
+        {
+            var inputCount = networkShape[0];
+            var hiddenCount = networkShape[1];
+            var outputCount = networkShape[2];
+            var correctDnaLength = inputCount * 2 + (inputCount * hiddenCount + hiddenCount) +
+                                   (hiddenCount * outputCount + outputCount);
+            if (correctDnaLength != dna.Length)
+            {
+                throw new InvalidOperationException("Dna was not of correct length");
+            }
         }
 
         private double[] GetNeuronDna(double[] dnaOfLayer, int dnaElementsNeeded, int dnaIndex)
