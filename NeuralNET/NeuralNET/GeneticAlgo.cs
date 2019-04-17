@@ -47,13 +47,22 @@ namespace NeuralNET
 
         private NeuralNetwork[] SpawnNextGeneration(NeuralNetwork[] survivors)
         {
-            var childrenToGenerateCount = _populationCount - survivors.Length;
-            var newChildren = Enumerable.Range(0, childrenToGenerateCount)
+            var newChildren = Enumerable.Range(0, _populationCount)
                 .Select(_ => GetParents(survivors))
                 .Select(parents => SpawnNewChild(parents))
                 .ToArray();
-            return newChildren.Concat(survivors).ToArray();
+            return newChildren.ToArray();
         }
+
+        //private NeuralNetwork[] SpawnNextGeneration(NeuralNetwork[] survivors)
+        //{
+        //    var childrenToGenerateCount = _populationCount - survivors.Length;
+        //    var newChildren = Enumerable.Range(0, childrenToGenerateCount)
+        //        .Select(_ => GetParents(survivors))
+        //        .Select(parents => SpawnNewChild(parents))
+        //        .ToArray();
+        //    return newChildren.Concat(survivors).ToArray();
+        //}
 
         private NeuralNetwork[] GetParents(NeuralNetwork[] survivors)
         {
@@ -95,7 +104,7 @@ namespace NeuralNET
             {
                 if (_rndGen.Next(0, 100) <= _mutationChance)
                 {
-                    dna[i] = _rndGen.NextDouble();
+                    dna[i] += (_rndGen.NextDouble() - 0.5) / 5; //<-0,1 - 0,1> small difference to dna value
                 }
             }
         }

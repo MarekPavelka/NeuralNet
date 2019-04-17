@@ -24,7 +24,7 @@ namespace NeuralNET
             chart.Title = "Learning Progress";
 
             var populationCount = 100;
-            var generation0 = Enumerable.Range(0, populationCount).Select(_ => new NeuralNetwork(2, 3, 1)).ToArray();
+            var generation0 = Enumerable.Range(0, populationCount).Select(_ => new NeuralNetwork(2, 5, 1)).ToArray();
             var improvedGeneration = generation0;
 
             for (int i = 0; i < 10000000; i++)
