@@ -39,10 +39,27 @@ namespace NeuralNET
 
         private NeuralNetwork[] GetSurvivors(NeuralNetwork[] generation, Func<NeuralNetwork, double> fitness)
         {
-            var survivors = generation.OrderByDescending(fitness)
+            var survivors = generation.OrderByDescending(n => fitness(n) + IndividualityFitness(n, generation))
                 .Take(_survivorsCount)
                 .ToArray();
             return survivors;
+        }
+
+        private double IndividualityFitness(NeuralNetwork n, NeuralNetwork[] generation) //difference between dna
+        {
+            var score = 0.0;
+            foreach (var net in generation)
+            {
+                score += Difference(n, net);
+            }
+
+            return score / generation.Length;
+        }
+
+        private double Difference(NeuralNetwork n, NeuralNetwork net)
+        {
+            var dna = n.GetNetworkDna();
+            return dna.Zip(net.GetNetworkDna(), (a, b) => Math.Abs(a - b)).Sum() / dna.Length;
         }
 
         private NeuralNetwork[] SpawnNextGeneration(NeuralNetwork[] survivors)
